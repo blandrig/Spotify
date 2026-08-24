@@ -74,6 +74,22 @@
     })();
   </script>
   <script>
+    (function () {
+      const storageKey = 'music-crossword-042-progress';
+      const saveProgress = () => {
+        try { localStorage.setItem(storageKey, JSON.stringify([...document.querySelectorAll('#grid input')].map(input => input.disabled ? null : input.value || ''))); } catch (error) {}
+      };
+      try {
+        const saved = JSON.parse(localStorage.getItem(storageKey) || 'null');
+        if (Array.isArray(saved)) document.querySelectorAll('#grid input').forEach((input, index) => { if (!input.disabled && typeof saved[index] === 'string') { input.value = saved[index]; input.parentElement.classList.toggle('correct', !!input.value && input.value.toUpperCase() === input.dataset.answer.toUpperCase()); } });
+        if (typeof updateProgress === 'function') updateProgress();
+      } catch (error) {}
+      document.querySelector('#grid').addEventListener('input', saveProgress);
+      document.querySelector('#clearBtn').addEventListener('click', saveProgress);
+      document.querySelector('#hintBtn').addEventListener('click', saveProgress);
+    })();
+  </script>
+  <script>
     document.addEventListener('dblclick', function (event) {
       const cell = event.target.closest('#grid .cell');
       if (!cell) return;
